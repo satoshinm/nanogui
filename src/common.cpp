@@ -51,20 +51,6 @@ void init() {
 void mainloop() {
     __mainloop_active = true;
 
-    /* If there are no mouse/keyboard events, try to refresh the
-       view roughly every 50 ms; this is to support animations
-       such as progress bars while keeping the system load
-       reasonably low */
-    std::thread refresh_thread = std::thread(
-        [&]() {
-            std::chrono::milliseconds time(50);
-            while (__mainloop_active) {
-                std::this_thread::sleep_for(time);
-                glfwPostEmptyEvent();
-            }
-        }
-    );
-
     try {
         while (__mainloop_active) {
             int numScreens = 0;
@@ -86,15 +72,13 @@ void mainloop() {
                 break;
             }
 
-            /* Wait for mouse/keyboard or empty refresh events */
-            glfwWaitEvents();
+            /* poll for mouse/keyboard */
+            glfwPollEvents();
         }
     } catch (const std::exception &e) {
         std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
         abort();
     }
-
-    refresh_thread.join();
 }
 
 void leave() {

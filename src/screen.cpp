@@ -88,7 +88,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
     glViewport(0, 0, mFBSize[0], mFBSize[1]);
     glClearColor(mBackground[0], mBackground[1], mBackground[2], 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
     glfwSwapBuffers(mGLFWWindow);
 
 #if defined(__APPLE__)
