@@ -11,6 +11,8 @@
 
 #pragma once
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <nanogui/common.h>
 #include <nanogui/widget.h>
 #include <nanogui/screen.h>
@@ -35,3 +37,4 @@
 #include <nanogui/colorwheel.h>
 #include <nanogui/graph.h>
 #include <nanogui/formhelper.h>
+#pragma GCC diagnostic pop
