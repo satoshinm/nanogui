@@ -19,7 +19,13 @@
 #include <iostream>
 #include <map>
 
+#ifdef __EMSCRIPTEN__
+#define NANOVG_GLES2_IMPLEMENTATION
+#define nvgCreateGL3 nvgCreateGLES2
+#define nvgDeleteGL3 nvgDeleteGLES2
+#else
 #define NANOVG_GL3_IMPLEMENTATION
+#endif
 #include <nanovg_gl.h>
 
 NAMESPACE_BEGIN(nanogui)
