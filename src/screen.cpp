@@ -151,6 +151,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
         }
     );
 
+#ifndef __EMSCRIPTEN__
     glfwSetDropCallback(mGLFWWindow,
         [](GLFWwindow *w, int count, const char **filenames) {
             auto it = __nanogui_screens.find(w);
@@ -162,6 +163,7 @@ Screen::Screen(const Vector2i &size, const std::string &caption,
             s->dropCallbackEvent(count, filenames);
         }
     );
+#endif
 
     glfwSetScrollCallback(mGLFWWindow,
         [](GLFWwindow *w, double x, double y) {
@@ -214,15 +216,19 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mBackground = Vector3f(0.3f, 0.3f, 0.32f);
     __nanogui_screens[mGLFWWindow] = this;
 
+#ifdef __EMSCRIPTEN__
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
+#endif
 }
 
 Screen::~Screen() {
     __nanogui_screens.erase(mGLFWWindow);
     for (int i=0; i < (int) Cursor::CursorCount; ++i) {
+#ifdef __EMSCRIPTEN__
         if (mCursors[i])
             glfwDestroyCursor(mCursors[i]);
+#endif
     }
     if (mNVGContext)
         nvgDeleteGL3(mNVGContext);
@@ -354,7 +360,9 @@ bool Screen::cursorPosCallbackEvent(double x, double y) {
             Widget *widget = findWidget(p);
             if (widget != nullptr && widget->cursor() != mCursor) {
                 mCursor = widget->cursor();
+#ifndef __EMSCRIPTEN__
                 glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
+#endif
             }
         } else {
             ret = mDragWidget->mouseDragEvent(
@@ -403,7 +411,9 @@ bool Screen::mouseButtonCallbackEvent(int button, int action, int modifiers) {
 
         if (dropWidget != nullptr && dropWidget->cursor() != mCursor) {
             mCursor = dropWidget->cursor();
+#ifndef __EMSCRIPTEN__
             glfwSetCursor(mGLFWWindow, mCursors[(int) mCursor]);
+#endif
         }
 
         if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1) {
