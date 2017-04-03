@@ -25,6 +25,10 @@
     #include <sys/dir.h>
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 NAMESPACE_BEGIN(nanogui)
 
 static bool __mainloop_active = false;
@@ -48,11 +52,26 @@ void init() {
     glfwSetTime(0);
 }
 
+void one_iter();
 void mainloop() {
     __mainloop_active = true;
 
     try {
+#ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop(one_iter, 60, 1);
+        glfwSwapInterval(1);
+#else
         while (__mainloop_active) {
+            one_iter();
+        }
+#endif
+    } catch (const std::exception &e) {
+        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
+        abort();
+    }
+}
+
+void one_iter() {
             int numScreens = 0;
             for (auto kv : __nanogui_screens) {
                 Screen *screen = kv.second;
@@ -69,17 +88,13 @@ void mainloop() {
             if (numScreens == 0) {
                 /* Give up if there was nothing to draw */
                 __mainloop_active = false;
-                break;
+                //break;
             }
 
             /* poll for mouse/keyboard */
             glfwPollEvents();
-        }
-    } catch (const std::exception &e) {
-        std::cerr << "Caught exception in main loop: " << e.what() << std::endl;
-        abort();
-    }
 }
+
 
 void leave() {
     __mainloop_active = false;
