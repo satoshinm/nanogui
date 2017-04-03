@@ -118,6 +118,11 @@ include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CU
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
 set(bin2c_cmdline resources.cpp resources.h)
+if (EMSCRIPTEN)
+  # bin2c runs under emscripten too (TODO: how to run natively?), so give it access to the files it transforms
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --embed-file ${CMAKE_CURRENT_SOURCE_DIR}/resources")
+  # TODO: but it still needs to write the resources.cpp and resources.h file outputs...
+endif ()
 file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
 foreach(file ${resources})
   list(APPEND bin2c_cmdline ${file})
