@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <errno.h>
 
 #if defined(_WIN32)
 #pragma warning(disable : 4996) // The POSIX name for this item is deprecated.
@@ -18,12 +19,12 @@ int main(int argc, char **argv) {
 	}
 	f_c = fopen(argv[1], "w");
 	if (!f_c) {
-		fprintf(stderr, "Error opening %s\n", argv[1]);
+		fprintf(stderr, "Error opening C file: %s: %d %s\n", argv[1], errno, strerror(errno));
 		return -1;
 	}
 	f_h = fopen(argv[2], "w");
 	if (!f_h) {
-		fprintf(stderr, "Error opening %s\n", argv[2]);
+		fprintf(stderr, "Error opening H file: %s: %d %s\n", argv[2], errno, strerror(errno));
 		return -1;
 	}
 
@@ -45,7 +46,7 @@ int main(int argc, char **argv) {
 
 		f_i = fopen(argv[i], "rb");
 		if (!f_i) {
-			fprintf(stderr, "Error opening %s\n", argv[i]);
+			fprintf(stderr, "Error opening data file %s: %d %s\n", argv[i], errno, strerror(errno));
 			return -1;
 		}
 
