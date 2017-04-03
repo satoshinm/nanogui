@@ -115,14 +115,13 @@ endif()
 
 include_directories(ext/eigen ext/glfw/include ext/nanovg/src include ${CMAKE_CURRENT_BINARY_DIR})
 
+if (EMSCRIPTEN)
+    # Unable to run bin2c since it compiles with emscripten so can't write back to native
+    # filesystem, so instead use prebuilt resources.cpp and resources.h
+else ()
 # Run simple C converter to put font files into the data segment
 add_executable(bin2c resources/bin2c.c)
 set(bin2c_cmdline resources.cpp resources.h)
-if (EMSCRIPTEN)
-  # bin2c runs under emscripten too (TODO: how to run natively?), so give it access to the files it transforms
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --embed-file ${CMAKE_CURRENT_SOURCE_DIR}/resources")
-  # TODO: but it still needs to write the resources.cpp and resources.h file outputs...
-endif ()
 file(GLOB resources "${CMAKE_CURRENT_SOURCE_DIR}/resources/*.ttf")
 foreach(file ${resources})
   list(APPEND bin2c_cmdline ${file})
@@ -135,6 +134,7 @@ add_custom_command(
   DEPENDS bin2c ${resources}
   COMMENT "Running bin2c"
   PRE_BUILD VERBATIM)
+endif ()
 
 # Needed to generated files
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

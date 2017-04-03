@@ -13,7 +13,11 @@
 
 #include <nanogui/theme.h>
 #include <nanogui/opengl.h>
+#ifdef __EMSCRIPTEN__
+#include <nanogui/resources.h>
+#else
 #include <resources.h>
+#endif
 
 NAMESPACE_BEGIN(nanogui)
 
