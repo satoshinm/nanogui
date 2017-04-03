@@ -222,7 +222,7 @@ void Screen::initialize(GLFWwindow *window, bool shutdownGLFWOnDestruct) {
     mBackground = Vector3f(0.3f, 0.3f, 0.32f);
     __nanogui_screens[mGLFWWindow] = this;
 
-#ifdef __EMSCRIPTEN__
+#ifndef __EMSCRIPTEN__
     for (int i=0; i < (int) Cursor::CursorCount; ++i)
         mCursors[i] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR + i);
 #endif
