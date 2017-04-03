@@ -49,8 +49,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 endif()
 
-# Compile GLFW
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+if (EMSCRIPTEN)
+    # Emscripten has its own GLFW
+else ()
+    # Compile GLFW
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ext/glfw" "ext_build/glfw")
+endif ()
 
 # Shared library mode: add NANOGUI_SHARED flag to all targets
 if (NANOGUI_BUILD_SHARED)
@@ -138,9 +142,13 @@ else()
 endif()
 
 # Compile main NanoGUI library
+if (NOT EMSCRIPTEN)
+    add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
+      # Merge GLFW into the NanoGUI library
+      $<TARGET_OBJECTS:glfw_objects>
+    )
+endif ()
 add_library(nanogui ${NANOGUI_LIBRARY_TYPE}
-  # Merge GLFW into the NanoGUI library
-  $<TARGET_OBJECTS:glfw_objects>
   # Merge NanoVG into the NanoGUI library
   ext/nanovg/src/nanovg.c
   # Merge GLEW into the NanoGUI library (only if needed)
